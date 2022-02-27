@@ -1,3 +1,16 @@
 body {
     padding-top: 5rem;
 }
+
+.imgGallery{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-column-gap: 1em;
+    grid-row-gap: 1em;
+    background-color: white;
+}
+
+.photo{
+    width: 20rem;
+    height: 22rem;
+}

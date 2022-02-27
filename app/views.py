@@ -6,9 +6,8 @@ This file creates your application.
 """
 import os
 from app import app
-from flask import render_template, request, redirect, url_for, flash, session, abort
+from flask import render_template, request, redirect, url_for, flash, session, abort, send_from_directory
 from werkzeug.utils import secure_filename
-
 from app.forms import UploadForm
 
 
@@ -50,6 +49,19 @@ def upload():
                 return redirect(url_for('home'))
                 flash_errors(fileRecv)
     return render_template('upload.html', temp_form = forms)
+
+
+@app.route('/uploads/<filename>')
+def get_image(filename):
+    return send_from_directory(os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER']), filename)
+
+@app.route('/files')
+def files():
+    if not session.get('logged_in'):
+        abort(401)
+
+    if request.method == 'GET':
+        return render_template('files.html', fileLst = get_uploaded_images())
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -108,6 +120,18 @@ def add_header(response):
 def page_not_found(error):
     """Custom 404 page."""
     return render_template('404.html'), 404
+
+
+def get_uploaded_images():
+    fileLst = []
+    rootdir = os.getcwd()
+
+    for subdir, dirs, files in os.walk(rootdir + app.config['UPLOAD_FOLDER']):
+        for file in files:
+            fileLst.append(file)
+    return fileLst
+
+
 
 
 if __name__ == '__main__':
